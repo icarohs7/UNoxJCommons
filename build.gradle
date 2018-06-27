@@ -1,0 +1,139 @@
+ plugins {
+ 	id 'com.jfrog.bintray' version '1.8.3'
+ 	id 'com.palantir.git-version' version '0.11.0'
+ 	id 'maven-publish'
+ 	id 'java'
+ }
+
+ group 'com.github.icarohs7'
+ ext {
+ 	bintrayRepo = 'libraries'
+ 	artifactId = 'unoxjcommons'
+ 	licenses = ['MIT']
+ 	websiteUrl = 'https://github.com/icarohs7/UNoxJCommons'
+ 	issueTrackerUrl = 'https://github.com/icarohs7/UNoxJCommons/issues'
+ 	vcsUrl = 'https://github.com/icarohs7/UNoxJCommons.git'
+ 	githubRepo = 'icarohs7/UNoxJCommons'
+ }
+ version gitVersion().toString().find('(\\d\\.\\d\\.\\d)')
+ description 'Biblioteca de componentes para a linguagem Java'
+ sourceCompatibility = 1.8
+ targetCompatibility = 1.8
+
+ def pomConfig = {
+ 	licenses {
+ 		license {
+ 			name 'MIT License'
+ 			url 'https://opensource.org/licenses/MIT'
+ 		}
+ 	}
+ 	developers {
+ 		developer {
+ 			id 'icarohs7'
+ 			name 'Icaro R D Temponi'
+ 			email 'icarohs7@gmail.com'
+ 		}
+ 	}
+
+ 	scm {
+ 		url project.vcsUrl
+ 	}
+ }
+
+ dependencies {
+	 testImplementation 'org.junit.jupiter:junit-jupiter-api:5.2.0'
+	 testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
+ }
+
+ repositories {
+ 	mavenCentral()
+ }
+
+ clean {
+ 	new File('out').deleteDir()
+ }
+
+ test {
+ 	useJUnitPlatform()
+ }
+
+ task wrapper(type: Wrapper) {
+ 	gradleVersion '4.8.1'
+ }
+
+ def properties = new Properties()
+ properties.load(new FileInputStream('local.properties'))
+
+ bintray {
+ 	user = properties.getProperty('BINTRAY_USER')
+ 	key = properties.getProperty('BINTRAY_KEY')
+ 	publications = ['mavenJava']
+ 	publish = true
+
+ 	pkg {
+ 		repo = project.bintrayRepo
+ 		name = project.artifactId
+ 		desc = project.description
+ 		licenses = project.licenses
+ 		websiteUrl = project.websiteUrl
+ 		issueTrackerUrl = project.issueTrackerUrl
+ 		vcsUrl = project.vcsUrl
+ 		githubRepo = project.githubRepo
+ 		publicDownloadNumbers = true
+
+ 		version {
+ 			name = project.version
+ 			released = new Date()
+ 			vcsTag = project.version
+
+ 			gpg {
+ 				sign = true //Determines whether to GPG sign the files. The default is false
+ 				passphrase = properties.getProperty('GPG_PASS') //Optional. The passphrase for GPG signing'
+ 			}
+ 			mavenCentralSync {
+ 				sync = true //[Default: true] Determines whether to sync the version to Maven Central.
+ 				user = properties.getProperty('OSS_USER') //OSS user token: mandatory
+ 				password = properties.getProperty('OSS_PASS') //OSS user password: mandatory
+ 				close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central.
+ 			}
+ 		}
+ 	}
+ }
+
+ task sourcesJar(type: Jar, dependsOn: project.classes) {
+ 	from sourceSets.main.allSource
+ }
+
+ task javadocJar(type: Jar, dependsOn: project.javadoc) {
+ 	from javadoc.destinationDir
+ }
+
+ artifacts {
+ 	archives sourcesJar, javadocJar
+ }
+
+ publishing {
+ 	publications {
+ 		mavenJava(MavenPublication) {
+ 			artifactId project.bintray.pkg.name
+ 			groupId project.group
+ 			version project.version
+ 			from components.java
+
+ 			pom.withXml {
+ 				def root = asNode()
+ 				root.appendNode('description', project.description)
+ 				root.appendNode('name', project.bintray.pkg.name)
+ 				root.appendNode('url', project.bintray.pkg.websiteUrl)
+ 				root.children().last() + pomConfig
+ 			}
+
+ 			artifact sourcesJar {
+ 				classifier = 'sources'
+ 			}
+ 			artifact javadocJar {
+ 				classifier = 'javadoc'
+ 			}
+ 		}
+ 	}
+ }
