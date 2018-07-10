@@ -1,29 +1,23 @@
-# UNoxJCommons [ ![Download](https://api.bintray.com/packages/icarohs7/libraries/unoxjcommons/images/download.svg) ](https://bintray.com/icarohs7/libraries/unoxjcommons/_latestVersion)
+# <img src ="https://github.com/icarohs7/UNoxJCommons/blob/master/assets/java-logo.png" width=24> UNoxJCommons
+[![GitHub version](https://badge.fury.io/gh/icarohs7%2FUNoxJCommons.svg)](https://github.com/icarohs7/UNoxJCommons/releases)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.icarohs7/unoxjcommons/badge.svg)](https://mvnrepository.com/artifact/com.github.icarohs7/unoxjcommons)
+[![GitHub license](https://img.shields.io/github/license/icarohs7/UNoxJCommons.svg)](https://github.com/icarohs7/UNoxJCommons/blob/master/LICENSE)
+
+## Descrição
+
 Biblioteca de componentes para a linguagem Java
 
-## Sumário
+# Sumário
 
 * [Dependências](#dependências)
-  * [Gradle](#gradle)
-  * [Maven](#maven)
-* [Swing](#swing)
-    * [Tabelas:](#tabelas)
-        * [Obter instância da tabela](#obter-instância-da-tabela)
-        * [Tabela editavel](#tabela-editavel)
-        * [Tabela a partir de um TableModel personalizado](#tabela-a-partir-de-um-tablemodel-personalizado)
-        * [Tabela embrulhada em um JScrollPane](#tabela-embrulhada-em-um-jscrollpane)
-        * [NXTableModel](#nxtablemodel)
-        * [Manipulando dados da tabela](#manipulando-dados-da-tabela)
-    * [NXField: ](#nxfield)
-        * [Instanciando](#instanciando)
-        * [Recuperando o texto](#recuperando-o-texto)
-        * [Manipulando o texto](#manipulando-o-texto)
-        * [Binding bidirecional](#binding-bidirecional)
+	+ [Gradle](#gradle)
+	+ [Maven](#maven)
+* [Funcionalidades](#funcionalidades)
+	+ [NXTable](#nxtable)
+	+ [NXTableModel](#nxtablemodel)
+	+ [NXField](#nxfield)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
-
-## Dependências
+# Dependências
 
 #### Gradle
 
@@ -50,13 +44,13 @@ repositories {
 	</dependency>
 </dependencies>
 ```
-# Swing
 
-## Tabelas
-Classes para simplificar a manipulações de tabelas em Swing
+# Funcionalidades
 
-##### Obter instância da tabela
+## NXTable
+Implementação de `JTable` buscando simplificar a manipulação de tabelas em Swing
 
+* Obter instância da tabela
 ```java
 String[] colunas = {"ID","Nome","Idade"};
 String[][] dados = {
@@ -68,37 +62,33 @@ String[][] dados = {
 JTable tabela = new NXTable(dados,colunas);
 ```
 
-##### Tabela editavel
-
+* Tabela editavel
 ```java
 JTable tabela = NXTable.ofMutableCells(dados,colunas);
 ```
 
-##### Tabela a partir de um TableModel personalizado
-
+* Tabela a partir de um `TableModel` personalizado
 ```java
 TableModel model = new DefaultTableModel(dados,colunas);
 
 JTable tabela = NXTable.ofACustomModel(model);
 ```
 
-##### Tabela embrulhada em um JScrollPane
-
+* Tabela embrulhada em um `JScrollPane`
 ```java
 tabela.getScrollableTable();
 ```
 
-### NXTableModel
+## NXTableModel
 Através desse table model é possível editar livremente as células da tabela.<br> 
-Utilizado por padrão na chamada ScrollTable.ofMutableCells
+Utilizado por padrão na chamada `ScrollTable.ofMutableCells`
 
 ```java
 JTable tabela = NXTable.ofMutableCells(dados,colunas);
 NXTableModel model = (NXTableModel) tabela.getModel();
 ```
 
-##### Manipulando dados da tabela
-
+* Manipulando dados da tabela
 ```java
 // Criar tabela e obter model editável
 JTable tabela = NXTable.ofMutableCells(dados,colunas);
@@ -111,7 +101,9 @@ model.addRow(new String[]{"5","Geraldo","25"});
 
 // Remover linhas da tabela
 model.removeRow(0);
-model.removeRow(0); // Quando o primeiro elemento é removido, o seguinte toma seu lugar
+
+// Quando o primeiro elemento é removido, o seguinte toma seu lugar
+model.removeRow(0);
 
 // Editar linhas da tabela
 model.setValueAt(new String[]{"4","Marcos","28"}, 3); // Altera a quarta linha
@@ -125,35 +117,28 @@ String[][] novosDados = {
 		{"2","Jefersom","22"}
 };
 
-model.setAllRows(novosDados); // Array bidimensional ou lista de arrays
+// Array bidimensional ou lista de arrays
+model.setAllRows(novosDados);
 ```
 
 ## NXField
-Classe composta de uma label e um text field associado, utilizada
-para representar um campo de formulário ou entrada de dados genérica
+Classe composta de uma `JLabel` e um `JTextField` associados.<br> 
+Utilizada para representar um campo de formulário ou entrada de dados genérica
 
-##### Instanciando
-
+* Instanciando
 ```java
 // Cria um campo associado a uma label
 // com o texto "Nome"
 NXField campo = new NXField("Nome");
 ```
 
-##### Recuperando o texto
-É possível recuperar o texto através do acesso direto ao JTextField,
-mas o recomendado é utilizar a propriedade text dentro do próprio
-NXField:
-
+* Recuperando o texto
 ```java
 // Recupera o texto do campo
 String texto = campo.getText();
 ```
 
-##### Manipulando o texto
-Ao utilizar a propriedade de texto do campo, é possível alterar o
-texto presente e utilizar binding para conectar o texto a uma propriedade
-
+* Manipulando o texto e realizando binding
 ```java
 // Editar o texto
 campo.setText("Olá, Mundo!");
@@ -161,15 +146,14 @@ campo.setText("Olá, Mundo!");
 //Realizar binding do texto, interligando o valor do campo à propriedade desejada
 StringProperty propriedade = new SimpleStringProperty();
 
-campo.textProperty().bind(propriedade); // Atrela valor da propriedade ao valor do campo, unidirecionalmente
+// Atrela valor da propriedade ao valor do campo, unidirecionalmente
+campo.textProperty().bind(propriedade);
 
-propriedade.setText("Olá, Mundo!"); // Quando a propriedade se altera, o valor do campo também é alterado
+// Quando a propriedade se altera, o valor do campo também é alterado
+propriedade.setText("Olá, Mundo!");
 ```
 
-##### Binding bidirecional
-Utilizado para conectar uma propriedade ao valor do campo bidirecionalmente,
-de forma que alterações em qualquer uma das partes se reflete na outra
-
+* Binding bidirecional
 ```java
 // Instânciar a propriedade a ser atrelada ao campo
 StringProperty propriedade = new SimpleStringProperty();
